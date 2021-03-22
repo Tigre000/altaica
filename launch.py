@@ -21,7 +21,7 @@ def launch():
 
 @click.option('--dostype', '-t', default="", help='Type of DoS')
 @click.option('--host', '-h', default="127.0.0.1", show_default=True, help='Host to send')
-@click.option('--port', '-p', default="80", show_default=True, help='Port to send')
+@click.option('--port', '-p', default=80, show_default=True, help='Port to send')
 @click.option('--count', '-c', default=4, show_default=True, help='Number of packets to send')
 @click.option('--examples', '-e', is_flag=True, help='Examples')
 @click.option('--lists', '-l', is_flag=True, help='DoS lists')
